@@ -1,0 +1,74 @@
+< initialize 3 nodes
+> --> initialized 3 nodes
+< 
+< // node 3 starts a proposal
+< at 1001 send prepare request from 3
+> --> sent prepare requests to all nodes from 3 with sequence 5003
+< 
+< // deliver all three prepare requests, each triggering a response
+< at 1002 deliver prepare request message to 2 from time 1001
+> --> prepare request from 3 sequence 5003 accepted by 2 with no value
+< at 1003 deliver prepare request message to 3 from time 1001
+> --> prepare request from 3 sequence 5003 accepted by 3 with no value
+< at 1004 deliver prepare request message to 1 from time 1001
+> --> prepare request from 3 sequence 5003 accepted by 1 with no value
+< 
+< // deliver the first prepare response
+< at 1020 deliver prepare response message to 3 from time 1002
+> --> positive prepare response from 2 sequence 5003 recorded by 3 with no value
+< 
+< // deliver it again just for good measure
+< at 1021 deliver prepare response message to 3 from time 1002
+> --> prepare response from 2 sequence 5003 ignored as a duplicate by 3
+< 
+< // two responses is a majority so the second will trigger accept requests
+< at 1024 deliver prepare response message to 3 from time 1003
+> --> positive prepare response from 3 sequence 5003 recorded by 3 with no value
+> --> prepare round successful: 3 proposing its own value 33333
+> --> sent accept requests to all nodes from 3 with value 33333 sequence 5003
+< 
+< // deliver the third response, which will not affect the outcome
+< at 1025 deliver prepare response message to 3 from time 1004
+> --> positive prepare response from 1 sequence 5003 recorded by 3 with no value
+> --> valid prepare vote ignored by 3 because round is already resolved
+< 
+< // deliver all three accept requests, each triggering a reponse
+< at 1030 deliver accept request message to 3 from time 1024
+> --> accept request from 3 with value 33333 sequence 5003 accepted by 3
+< 
+< // at the moment the second acceptor votes in favor, consensus has been achieved
+< at 1031 deliver accept request message to 1 from time 1024
+> --> accept request from 3 with value 33333 sequence 5003 accepted by 1
+> --> note: consensus has been achieved
+< at 1032 deliver accept request message to 2 from time 1024
+> --> accept request from 3 with value 33333 sequence 5003 accepted by 2
+< 
+< // blast from the past! a duplicate message delivery
+< at 1035 deliver prepare response message to 3 from time 1003
+> --> prepare response from 3 sequence 5003 ignored as a duplicate by 3
+< 
+< // deliver the first accept response
+< at 1040 deliver accept response message to 3 from time 1030
+> --> positive accept response from 3 sequence 5003 recorded by 3
+< 
+< // at the moment the second acceptor vote is counted,
+< // consensus has been discovered by the proposer
+< // and decide requests will be sent out
+< at 1041 deliver accept response message to 3 from time 1031
+> --> positive accept response from 1 sequence 5003 recorded by 3
+> --> accept round successful: 3 detected consensus with value 33333
+> --> sent decide requests to all nodes from 3 with value 33333
+< 
+< // deliver the third response, which will not affect the outcome
+< at 1042 deliver accept response message to 3 from time 1032
+> --> positive accept response from 2 sequence 5003 recorded by 3
+> --> valid accept vote ignored by 3 because round is already resolved
+< 
+< // deliver all three decide requests
+< // nodes can act on the decision when they receive these requests
+< at 1050 deliver decide request message to 1 from time 1041
+> --> recording consensus value 33333 at 1
+< at 1051 deliver decide request message to 2 from time 1041
+> --> recording consensus value 33333 at 2
+< at 1052 deliver decide request message to 3 from time 1041
+> --> recording consensus value 33333 at 3

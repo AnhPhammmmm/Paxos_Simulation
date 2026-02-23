@@ -1,0 +1,121 @@
+initialize 5 nodes
+
+// node 1 starts a proposal
+at 1001 send prepare request from 1
+
+// they are all delivered as normal
+at 1002 deliver prepare request message to 1 from time 1001
+at 1003 deliver prepare request message to 2 from time 1001
+at 1004 deliver prepare request message to 3 from time 1001
+at 1005 deliver prepare request message to 4 from time 1001
+at 1006 deliver prepare request message to 5 from time 1001
+
+// a second proposer jumps in
+at 1010 send prepare request from 2
+
+// its requests get to all nodes before any accept requests are delivered
+at 1011 deliver prepare request message to 1 from time 1010
+at 1012 deliver prepare request message to 2 from time 1010
+at 1013 deliver prepare request message to 3 from time 1010
+at 1014 deliver prepare request message to 4 from time 1010
+at 1015 deliver prepare request message to 5 from time 1010
+
+// the first proposer receives its votes and tries to initiate an accept round
+at 1020 deliver prepare response message to 1 from time 1002
+at 1021 deliver prepare response message to 1 from time 1003
+at 1022 deliver prepare response message to 1 from time 1004
+at 1023 deliver prepare response message to 1 from time 1005
+at 1024 deliver prepare response message to 1 from time 1006
+
+// those requests are received and negative responses sent
+at 1030 deliver accept request message to 1 from time 1022
+at 1031 deliver accept request message to 2 from time 1022
+at 1032 deliver accept request message to 3 from time 1022
+at 1033 deliver accept request message to 4 from time 1022
+at 1034 deliver accept request message to 5 from time 1022
+
+// the rejections are processed
+at 1040 deliver accept response message to 1 from time 1030
+at 1041 deliver accept response message to 1 from time 1031
+
+// the 3rd rejection causes the round to fail, so it should kick off
+// a new prepare round automatically
+at 1042 deliver accept response message to 1 from time 1032
+
+// note: this advanced the node's proposal sequence, so
+// the remaining votes will be ignored as stragglers
+at 1043 deliver accept response message to 1 from time 1033
+at 1044 deliver accept response message to 1 from time 1034
+
+// the second proposer starts counting its votes
+at 1050 deliver prepare response message to 2 from time 1011
+at 1051 deliver prepare response message to 2 from time 1012
+
+// the third positive vote triggers an accept round
+at 1052 deliver prepare response message to 2 from time 1013
+at 1053 deliver prepare response message to 2 from time 1014
+at 1054 deliver prepare response message to 2 from time 1015
+
+// the first proposer's new prepare round messages are delivered
+// the new, higher sequence number wins and will lead to
+// the second proposer's accept round failing
+at 1060 deliver prepare request message to 1 from time 1042
+at 1061 deliver prepare request message to 2 from time 1042
+at 1062 deliver prepare request message to 3 from time 1042
+at 1063 deliver prepare request message to 4 from time 1042
+at 1064 deliver prepare request message to 5 from time 1042
+
+// second proposer accept messages are delivered
+at 1070 deliver accept request message to 1 from time 1052
+at 1071 deliver accept request message to 2 from time 1052
+at 1072 deliver accept request message to 3 from time 1052
+at 1073 deliver accept request message to 4 from time 1052
+at 1074 deliver accept request message to 5 from time 1052
+
+// rejections are delivered, triggering a new prepare round
+at 1080 deliver accept response message to 2 from time 1070
+at 1081 deliver accept response message to 2 from time 1071
+
+// the third rejection triggers a fresh prepare round
+at 1082 deliver accept response message to 2 from time 1072
+
+// the new sequence number means the remaining reject votes
+// will be ignored as stragglers from the past
+at 1083 deliver accept response message to 2 from time 1073
+at 1084 deliver accept response message to 2 from time 1074
+
+// the first proposer's prepare responses are delivered
+at 1090 deliver prepare response message to 1 from time 1060
+at 1091 deliver prepare response message to 1 from time 1061
+
+// the third vote triggers an accept round
+at 1092 deliver prepare response message to 1 from time 1062
+at 1093 deliver prepare response message to 1 from time 1063
+at 1094 deliver prepare response message to 1 from time 1064
+
+// this time the second proposer waits too long and the
+// first proposer succeeds
+at 1100 deliver accept request message to 1 from time 1092
+at 1101 deliver accept request message to 2 from time 1092
+
+// consensus is achieved as the 3rd acceptor records its vote
+at 1102 deliver accept request message to 3 from time 1092
+at 1103 deliver accept request message to 4 from time 1092
+at 1104 deliver accept request message to 5 from time 1092
+
+// the responses are delivered
+at 1110 deliver accept response message to 1 from time 1100
+at 1111 deliver accept response message to 1 from time 1101
+
+// the third response will let the proposer discover
+// the consensus and send out a decide round
+at 1112 deliver accept response message to 1 from time 1102
+at 1113 deliver accept response message to 1 from time 1103
+at 1114 deliver accept response message to 1 from time 1104
+
+// decide messages are delivered
+at 1120 deliver decide request message to 1 from time 1112
+at 1121 deliver decide request message to 2 from time 1112
+at 1122 deliver decide request message to 3 from time 1112
+at 1123 deliver decide request message to 4 from time 1112
+at 1124 deliver decide request message to 5 from time 1112
